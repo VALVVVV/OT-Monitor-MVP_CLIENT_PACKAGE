@@ -1,0 +1,118 @@
+{
+  "label": "vpn_off",
+  "started_at": "2026-06-08T21:07:57.564842+03:00",
+  "timeout_seconds": 20,
+  "sources_checked": 11,
+  "results": [
+    {
+      "url": "https://government.ru/docs/",
+      "status": "error",
+      "http_status_code": null,
+      "elapsed_seconds": null,
+      "content_type": null,
+      "html_size": null,
+      "page_title": null,
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='government.ru', port=443): Max retries exceeded with url: /docs/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='government.ru', port=443) at 0x1f3ca16c590>, 'Connection to government.ru timed out. (connect timeout=20)'))"
+    },
+    {
+      "url": "https://publication.pravo.gov.ru/",
+      "status": "error",
+      "http_status_code": null,
+      "elapsed_seconds": null,
+      "content_type": null,
+      "html_size": null,
+      "page_title": null,
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='publication.pravo.gov.ru', port=443) at 0x1f3ca140550>, 'Connection to publication.pravo.gov.ru timed out. (connect timeout=20)'))"
+    },
+    {
+      "url": "https://publication.pravo.gov.ru/api/Documents?PageSize=5&Index=1",
+      "status": "error",
+      "http_status_code": null,
+      "elapsed_seconds": null,
+      "content_type": null,
+      "html_size": null,
+      "page_title": null,
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Max retries exceeded with url: /api/Documents?PageSize=5&Index=1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='publication.pravo.gov.ru', port=443) at 0x1f3ca140e10>, 'Connection to publication.pravo.gov.ru timed out. (connect timeout=20)'))"
+    },
+    {
+      "url": "https://mintrud.gov.ru/docs",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 1.071,
+      "content_type": "text/html; charset=UTF-8",
+      "html_size": 110859,
+      "page_title": "Документы | Минтруд России",
+      "error": null
+    },
+    {
+      "url": "https://mchs.gov.ru/",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 0.727,
+      "content_type": "text/html; charset=UTF-8",
+      "html_size": 110814,
+      "page_title": "Министерство Российской Федерации по делам гражданской обороны, чрезвычайным ситуациям и ликвидации последствий стихийных бедствий",
+      "error": null
+    },
+    {
+      "url": "https://rospotrebnadzor.ru/",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 1.777,
+      "content_type": "text/html; charset=windows-1251",
+      "html_size": 81390,
+      "page_title": "Роспотребнадзор",
+      "error": null
+    },
+    {
+      "url": "https://rostrud.gov.ru/",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 0.187,
+      "content_type": "text/html; charset=UTF-8",
+      "html_size": 98396,
+      "page_title": "Федеральная служба по труду и занятости",
+      "error": null
+    },
+    {
+      "url": "https://minzdrav.gov.ru/documents",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 0.311,
+      "content_type": "text/html; charset=utf-8",
+      "html_size": 80341,
+      "page_title": "Министерство здравоохранения Российской Федерации",
+      "error": null
+    },
+    {
+      "url": "https://www.rst.gov.ru/",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 0.405,
+      "content_type": "text/html;charset=UTF-8",
+      "html_size": 470140,
+      "page_title": "Росстандарт",
+      "error": null
+    },
+    {
+      "url": "https://regulation.gov.ru/",
+      "status": "ok",
+      "http_status_code": 200,
+      "elapsed_seconds": 0.242,
+      "content_type": "text/html; charset=utf-8",
+      "html_size": 715636,
+      "page_title": null,
+      "error": null
+    },
+    {
+      "url": "https://nac.gov.ru/",
+      "status": "error",
+      "http_status_code": null,
+      "elapsed_seconds": null,
+      "content_type": null,
+      "html_size": null,
+      "page_title": null,
+      "error": "SSLError: HTTPSConnectionPool(host='nac.gov.ru', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)')))"
+    }
+  ]
+}

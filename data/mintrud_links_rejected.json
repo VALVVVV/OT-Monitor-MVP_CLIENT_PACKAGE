@@ -1,0 +1,6 @@
+{
+  "status": "error",
+  "source": "Минтруд России",
+  "url": "https://mintrud.gov.ru/docs",
+  "error": "ReadTimeout: HTTPSConnectionPool(host='mintrud.gov.ru', port=443): Read timed out. (read timeout=20)"
+}

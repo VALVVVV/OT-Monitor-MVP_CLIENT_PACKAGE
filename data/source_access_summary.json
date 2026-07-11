@@ -1,0 +1,286 @@
+{
+  "source_files": {
+    "vpn_on": "source_access_report_vpn_on.json",
+    "vpn_on_2": "source_access_report_vpn_on_2.json",
+    "vpn_off": "source_access_report_vpn_off.json"
+  },
+  "warnings": [],
+  "sources_compared": 11,
+  "results": [
+    {
+      "url": "https://government.ru/docs/",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='government.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='government.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_off": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ConnectTimeout: HTTPSConnectionPool(host='government.ru', port=443): Max retries exceeded with url: /docs/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='government.ru', port=443) at 0x1f3ca16c590>, 'Connection to government.ru timed out. (connect timeout=20)'))"
+      },
+      "summary": "не работает ни в одном запуске"
+    },
+    {
+      "url": "https://mchs.gov.ru/",
+      "vpn_on": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.259,
+        "html_size": 110814,
+        "error": null
+      },
+      "vpn_on_2": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.024,
+        "html_size": 110815,
+        "error": null
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.727,
+        "html_size": 110814,
+        "error": null
+      },
+      "summary": "стабильно доступен с VPN и без VPN"
+    },
+    {
+      "url": "https://mintrud.gov.ru/docs",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "SSLError: HTTPSConnectionPool(host='mintrud.gov.ru', port=443): Max retries exceeded with url: /docs (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)')))"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "SSLError: HTTPSConnectionPool(host='mintrud.gov.ru', port=443): Max retries exceeded with url: /docs (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)')))"
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.071,
+        "html_size": 110859,
+        "error": null
+      },
+      "summary": "лучше работает без VPN"
+    },
+    {
+      "url": "https://minzdrav.gov.ru/documents",
+      "vpn_on": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.169,
+        "html_size": 80341,
+        "error": null
+      },
+      "vpn_on_2": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.972,
+        "html_size": 80341,
+        "error": null
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.311,
+        "html_size": 80341,
+        "error": null
+      },
+      "summary": "стабильно доступен с VPN и без VPN"
+    },
+    {
+      "url": "https://nac.gov.ru/",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "SSLError: HTTPSConnectionPool(host='nac.gov.ru', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)')))"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "SSLError: HTTPSConnectionPool(host='nac.gov.ru', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)')))"
+      },
+      "vpn_off": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "SSLError: HTTPSConnectionPool(host='nac.gov.ru', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)')))"
+      },
+      "summary": "не работает ни в одном запуске"
+    },
+    {
+      "url": "https://publication.pravo.gov.ru/",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_off": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ConnectTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='publication.pravo.gov.ru', port=443) at 0x1f3ca140550>, 'Connection to publication.pravo.gov.ru timed out. (connect timeout=20)'))"
+      },
+      "summary": "не работает ни в одном запуске"
+    },
+    {
+      "url": "https://publication.pravo.gov.ru/api/Documents?PageSize=5&Index=1",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_off": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ConnectTimeout: HTTPSConnectionPool(host='publication.pravo.gov.ru', port=443): Max retries exceeded with url: /api/Documents?PageSize=5&Index=1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='publication.pravo.gov.ru', port=443) at 0x1f3ca140e10>, 'Connection to publication.pravo.gov.ru timed out. (connect timeout=20)'))"
+      },
+      "summary": "не работает ни в одном запуске"
+    },
+    {
+      "url": "https://regulation.gov.ru/",
+      "vpn_on": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.761,
+        "html_size": 715636,
+        "error": null
+      },
+      "vpn_on_2": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.188,
+        "html_size": 715636,
+        "error": null
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.242,
+        "html_size": 715636,
+        "error": null
+      },
+      "summary": "стабильно доступен с VPN и без VPN"
+    },
+    {
+      "url": "https://rospotrebnadzor.ru/",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='rospotrebnadzor.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='rospotrebnadzor.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 1.777,
+        "html_size": 81390,
+        "error": null
+      },
+      "summary": "лучше работает без VPN"
+    },
+    {
+      "url": "https://rostrud.gov.ru/",
+      "vpn_on": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.982,
+        "html_size": 98394,
+        "error": null
+      },
+      "vpn_on_2": {
+        "status": "ok",
+        "http_status_code": 502,
+        "elapsed_seconds": 8.993,
+        "html_size": 1387,
+        "error": null
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.187,
+        "html_size": 98396,
+        "error": null
+      },
+      "summary": "лучше работает без VPN"
+    },
+    {
+      "url": "https://www.rst.gov.ru/",
+      "vpn_on": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='www.rst.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_on_2": {
+        "status": "error",
+        "http_status_code": null,
+        "elapsed_seconds": null,
+        "html_size": null,
+        "error": "ReadTimeout: HTTPSConnectionPool(host='www.rst.gov.ru', port=443): Read timed out. (read timeout=20)"
+      },
+      "vpn_off": {
+        "status": "ok",
+        "http_status_code": 200,
+        "elapsed_seconds": 0.405,
+        "html_size": 470140,
+        "error": null
+      },
+      "summary": "лучше работает без VPN"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+CHECK_READY_RESULT.txt
+CLIENT_OUTPUT/*.rtf
+data/review_comments.json
+*.log
+.DS_Store
+Thumbs.db

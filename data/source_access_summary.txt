@@ -1,0 +1,67 @@
+Сводка сравнения доступности источников
+
+URL: https://government.ru/docs/
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=error, http=None, sec=None, size=None
+Вывод: не работает ни в одном запуске
+
+URL: https://mchs.gov.ru/
+vpn_on: status=ok, http=200, sec=1.259, size=110814
+vpn_on_2: status=ok, http=200, sec=1.024, size=110815
+vpn_off: status=ok, http=200, sec=0.727, size=110814
+Вывод: стабильно доступен с VPN и без VPN
+
+URL: https://mintrud.gov.ru/docs
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=ok, http=200, sec=1.071, size=110859
+Вывод: лучше работает без VPN
+
+URL: https://minzdrav.gov.ru/documents
+vpn_on: status=ok, http=200, sec=1.169, size=80341
+vpn_on_2: status=ok, http=200, sec=0.972, size=80341
+vpn_off: status=ok, http=200, sec=0.311, size=80341
+Вывод: стабильно доступен с VPN и без VPN
+
+URL: https://nac.gov.ru/
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=error, http=None, sec=None, size=None
+Вывод: не работает ни в одном запуске
+
+URL: https://publication.pravo.gov.ru/
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=error, http=None, sec=None, size=None
+Вывод: не работает ни в одном запуске
+
+URL: https://publication.pravo.gov.ru/api/Documents?PageSize=5&Index=1
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=error, http=None, sec=None, size=None
+Вывод: не работает ни в одном запуске
+
+URL: https://regulation.gov.ru/
+vpn_on: status=ok, http=200, sec=0.761, size=715636
+vpn_on_2: status=ok, http=200, sec=1.188, size=715636
+vpn_off: status=ok, http=200, sec=0.242, size=715636
+Вывод: стабильно доступен с VPN и без VPN
+
+URL: https://rospotrebnadzor.ru/
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=ok, http=200, sec=1.777, size=81390
+Вывод: лучше работает без VPN
+
+URL: https://rostrud.gov.ru/
+vpn_on: status=ok, http=200, sec=0.982, size=98394
+vpn_on_2: status=ok, http=502, sec=8.993, size=1387
+vpn_off: status=ok, http=200, sec=0.187, size=98396
+Вывод: лучше работает без VPN
+
+URL: https://www.rst.gov.ru/
+vpn_on: status=error, http=None, sec=None, size=None
+vpn_on_2: status=error, http=None, sec=None, size=None
+vpn_off: status=ok, http=200, sec=0.405, size=470140
+Вывод: лучше работает без VPN

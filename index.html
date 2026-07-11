@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ОТ-Монитор</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-branding">
+      <div class="leader-brand-mark" aria-label="Временная фирменная метка Лидер">
+        <span class="leader-brand-text">Лидер</span>
+      </div>
+      <h1>ОТ-Монитор</h1>
+      <p class="subtitle">MVP системы информирования инженера по охране труда</p>
+    </div>
+    <div class="top-actions">
+      <div class="primary-action-group">
+        <div class="review-zone-anchor" data-review-zone="check_now_button" data-review-title="Кнопка проверки новых документов">
+          <button id="check-now" type="button">Проверить новые документы</button>
+        </div>
+      </div>
+      <div class="review-actions-group">
+        <button id="toggle-review-mode" class="secondary-action-button" type="button" aria-pressed="false">Включить режим замечаний</button>
+        <button id="download-review-report" class="secondary-action-button" type="button" hidden>Скачать замечания в Word</button>
+        <button id="download-review-comments" class="secondary-action-button technical-action-button" type="button" hidden>Скачать технический файл</button>
+      </div>
+    </div>
+  </header>
+  <main data-review-zone="general_ui" data-review-title="Общий дизайн и удобство">
+    <div id="review-mode-tip" class="review-mode-tip" hidden>
+      <p class="review-mode-tip-text">Замечание сохраняется после нажатия кнопки «Сохранить». Все сохранённые замечания попадают в отчёт. Когда закончите, нажмите «Скачать замечания в Word». Файл можно открыть в Word, отредактировать и отправить разработчику.</p>
+      <p id="review-comments-counter" class="review-comments-counter">Сохранено замечаний: 0</p>
+      <button id="add-general-review-comment" class="secondary-action-button review-tip-button" type="button">Добавить общее замечание по странице</button>
+    </div>
+    <section class="stats-panel" data-review-zone="top_statuses" data-review-title="Верхние статусы">
+      <div class="stat-card">
+        <span class="stat-label">Последняя проверка</span>
+        <strong id="last-check">28 мая 2026</strong>
+      </div>
+      <button id="filter-status-new" class="stat-card stat-filter-card" type="button">
+        <span class="stat-label">Новые документы</span>
+        <strong id="new-docs">0</strong>
+      </button>
+      <button id="filter-status-review" class="stat-card stat-filter-card" type="button">
+        <span class="stat-label">Проверка актуальности</span>
+        <strong id="in-review">0</strong>
+      </button>
+      <button id="filter-status-work" class="stat-card stat-filter-card" type="button">
+        <span class="stat-label">Принято в работу</span>
+        <strong id="in-work">0</strong>
+      </button>
+      <button id="filter-status-not-relevant" class="stat-card stat-filter-card" type="button">
+        <span class="stat-label">Неактуально / не относится</span>
+        <strong id="consultation-docs">0</strong>
+      </button>
+      <button id="filter-status-closed" class="stat-card stat-filter-card" type="button">
+        <span class="stat-label">Закрыто</span>
+        <strong id="closed-docs">0</strong>
+      </button>
+    </section>
+
+    <section class="sources-section collapsible-section collapsed" id="source-rules-section" data-review-zone="source_rules" data-review-title="Источники и правила отбора">
+      <div class="section-header collapsible-header">
+        <button class="section-toggle" type="button" data-target="source-rules-body" aria-expanded="false">
+          <span class="section-toggle-icon">▶</span>
+          <span class="section-toggle-text">Источники и правила отбора</span>
+        </button>
+      </div>
+      <div id="source-rules-body" class="collapsible-body" hidden>
+        <p class="sources-note info-note">В этом разделе объединены реальные источники мониторинга и текущие правила мягкого отбора документов. Таблица помогает понять, откуда система берёт документы и по какой логике они попадают в ленту MVP.</p>
+        <div class="sources-table-wrapper">
+          <table class="sources-table">
+            <thead>
+              <tr>
+                <th>Источник</th>
+                <th>URL</th>
+                <th>Раздел</th>
+                <th>Режим отбора</th>
+                <th>Правило / комментарий</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="source-rules-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div class="documents-panel" data-review-zone="documents_list" data-review-title="Список найденных документов">
+        <div class="section-header">
+          <h2>Последние найденные документы</h2>
+        </div>
+        <div class="documents-toolbar">
+          <span id="current-documents-filter" class="current-filter-label">Рабочий список</span>
+          <button id="reset-documents-filter" class="toggle-documents-button" type="button" hidden>Сбросить фильтр</button>
+        </div>
+        <div id="document-list" class="document-list"></div>
+        <button id="toggle-documents-list" class="toggle-documents-button" type="button" hidden>Показать все документы</button>
+      </div>
+
+      <aside class="details-panel" data-review-zone="document_card" data-review-title="Карточка документа">
+        <div class="section-header">
+          <h2>Выбранный документ</h2>
+        </div>
+        <div id="selected-document" class="card detail-card">
+          <p class="empty-state">Выберите документ для просмотра деталей.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="schedule-section collapsible-section collapsed" id="check-mode-section" data-review-zone="check_mode" data-review-title="Режим проверки источников">
+      <div class="section-header collapsible-header">
+        <button class="section-toggle" type="button" data-target="check-mode-body" aria-expanded="false">
+          <span class="section-toggle-icon">▶</span>
+          <span class="section-toggle-text">Режим проверки источников</span>
+        </button>
+      </div>
+      <div id="check-mode-body" class="collapsible-body" hidden>
+        <div class="compact-check-panel">
+          <div class="compact-check-grid">
+            <div class="compact-check-row">
+              <span>Режим работы</span>
+              <strong id="check-mode-value">ручной</strong>
+            </div>
+            <div class="compact-check-row">
+              <span>Последняя проверка</span>
+              <strong id="schedule-last-check">—</strong>
+            </div>
+            <div class="compact-check-row">
+              <span>Следующая автоматическая проверка</span>
+              <strong>не настроена</strong>
+            </div>
+          </div>
+          <div id="check-notification" class="check-notification"></div>
+          <button id="toggle-schedule-settings" class="schedule-toggle-button" type="button">Настроить периодичность ▼</button>
+          <div id="schedule-settings-panel" class="schedule-settings-panel" hidden>
+            <p class="sources-note info-note">В MVP настройка периодичности показана как подготовка к автоматической проверке. Реальный автоматический запуск будет подключён на следующем этапе.</p>
+            <div class="schedule-settings-form">
+              <label class="schedule-field">
+                <span>Периодичность</span>
+                <select id="schedule-frequency">
+                  <option value="Только вручную">Только вручную</option>
+                  <option value="Раз в сутки">Раз в сутки</option>
+                  <option value="Раз в неделю">Раз в неделю</option>
+                  <option value="Раз в месяц">Раз в месяц</option>
+                </select>
+              </label>
+              <label class="schedule-field">
+                <span>Время проверки</span>
+                <input id="schedule-time" type="time" value="09:00">
+              </label>
+            </div>
+            <button id="save-schedule-settings" class="schedule-save-button" type="button">Сохранить настройку</button>
+            <p id="schedule-settings-message" class="schedule-settings-message"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="decision-log-section collapsible-section collapsed" id="decision-log-section" data-review-zone="decision_log" data-review-title="Журнал решений инженера">
+      <div class="section-header collapsible-header">
+        <button class="section-toggle" type="button" data-target="decision-log-body" aria-expanded="false">
+          <span class="section-toggle-icon">▶</span>
+          <span class="section-toggle-text">Журнал решений инженера</span>
+        </button>
+      </div>
+      <div id="decision-log-body" class="collapsible-body" hidden>
+        <p class="sources-note">Здесь отображаются сохранённые статусы и комментарии инженера по найденным документам.</p>
+        <div class="sources-table-wrapper">
+          <table class="sources-table">
+            <thead>
+              <tr>
+                <th>Дата и время решения</th>
+                <th>Документ</th>
+                <th>Статус</th>
+                <th>Комментарий инженера</th>
+                <th>Ответственный</th>
+              </tr>
+            </thead>
+            <tbody id="decision-log"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources-section collapsible-section collapsed" id="check-log-section" data-review-zone="check_log" data-review-title="Журнал проверок">
+      <div class="section-header collapsible-header">
+        <button class="section-toggle" type="button" data-target="check-log-body" aria-expanded="false">
+          <span class="section-toggle-icon">▶</span>
+          <span class="section-toggle-text">Журнал проверок</span>
+        </button>
+      </div>
+      <div id="check-log-body" class="collapsible-body" hidden>
+        <div class="check-log-wrapper">
+          <table class="check-log-table">
+            <thead>
+              <tr>
+                <th>Дата и время</th>
+                <th>Источник</th>
+                <th>Результат</th>
+                <th>Найдено документов</th>
+                <th>Новых документов</th>
+                <th>Ошибка</th>
+              </tr>
+            </thead>
+            <tbody id="check-log">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="review-comment-modal" class="review-modal" hidden>
+    <div class="review-modal-backdrop"></div>
+    <div class="review-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+      <h2 id="review-modal-title">Добавить замечание</h2>
+      <div class="detail-row">
+        <span>Блок интерфейса</span>
+        <strong id="review-zone-title">—</strong>
+      </div>
+      <p class="review-form-note">Чтобы замечание попало в отчёт, нажмите «Сохранить».</p>
+      <label class="detail-row" for="review-comment-text">
+        <span>Текст замечания</span>
+        <textarea id="review-comment-text" rows="6" placeholder="Напишите замечание простыми словами."></textarea>
+      </label>
+      <p id="review-form-message" class="review-form-message"></p>
+      <div class="review-modal-actions">
+        <button id="save-review-comment" type="button">Сохранить</button>
+        <button id="cancel-review-comment" class="secondary-action-button" type="button">Отмена</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
