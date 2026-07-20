@@ -6,3 +6,4 @@ data/review_comments.json
 *.log
 .DS_Store
 Thumbs.db
+.venv/
