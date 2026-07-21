@@ -7,3 +7,6 @@ data/review_comments.json
 .DS_Store
 Thumbs.db
 .venv/
+data/*.db
+data/*.db-wal
+data/*.db-shm
