@@ -329,35 +329,57 @@ const scheduleInterfaceState = {
   message: ""
 };
 
-function loadDecision(docId) {
-  const saved = localStorage.getItem(`otmonitor_decision_${docId}`);
-  if (!saved) {
-    return null;
-  }
-  try {
-    return JSON.parse(saved);
-  } catch (error) {
-    return null;
-  }
+function mapApiDecisionToUiEntry(item) {
+  return {
+    id: item.id,
+    docId: item.document_id,
+    title: item.document_title || "Без названия",
+    datetime: formatCheckLogDatetime(item.decided_at),
+    status: normalizeDocumentStatus(item.status),
+    comment: item.comment || "",
+    responsible: item.responsible || "Инженер по ОТ"
+  };
 }
 
-function saveDecision(docId, decision) {
-  localStorage.setItem(`otmonitor_decision_${docId}`, JSON.stringify(decision));
+async function loadDecisionLogFromApi() {
+  const response = await fetch("/api/decisions", { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+
+  if (!payload.ok || !Array.isArray(payload.decisions)) {
+    throw new Error("Некорректный ответ /api/decisions");
+  }
+
+  return payload.decisions.map(mapApiDecisionToUiEntry);
 }
 
-function loadDecisionLog() {
-  const saved = localStorage.getItem("otmonitor_decision_log");
-  if (!saved) {
-    return [];
+async function saveDecisionToApi(documentId, status, comment) {
+  const response = await fetch(`/api/documents/${documentId}/decision`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      status,
+      comment,
+      responsible: "Инженер по ОТ"
+    })
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.message || `HTTP ${response.status}`);
   }
-  try {
-    return JSON.parse(saved);
-  } catch (error) {
-    return [];
-  }
+
+  return payload;
 }
 
-const decisionLog = loadDecisionLog();
+let decisionLog = [];
 
 const sourceNames = {
   mintrud: "Минтруд России",
@@ -584,9 +606,6 @@ function getLatestCheckDatetimeForSource(sourceName) {
   return matchedEntry && matchedEntry.datetime ? matchedEntry.datetime : "—";
 }
 
-function saveDecisionLog() {
-  localStorage.setItem("otmonitor_decision_log", JSON.stringify(decisionLog));
-}
 
 function showCheckMessage(message) {
   checkNotification.innerHTML = `<p class="notification-text">${message}</p>`;
@@ -615,7 +634,12 @@ async function reloadRuntimeData() {
     console.warn("Не удалось загрузить журнал проверок из SQLite API.", error);
   }
 
-  initializeSavedStatuses();
+  try {
+    decisionLog = await loadDecisionLogFromApi();
+  } catch (error) {
+    decisionLog = [];
+    console.warn("Не удалось загрузить журнал решений из SQLite API.", error);
+  }
   renderStats();
   renderDocumentList();
   renderSourceRulesTable();
@@ -653,41 +677,6 @@ function renderDecisionLog() {
   });
 }
 
-function updateDecisionLogEntry(docId, title, status, comment) {
-  const datetime = formatCurrentDatetime();
-  const normalizedStatus = normalizeDocumentStatus(status);
-  const existingIndex = decisionLog.findIndex(entry => entry.docId === docId);
-  if (existingIndex >= 0) {
-    decisionLog[existingIndex] = {
-      docId,
-      title,
-      datetime,
-      status: normalizedStatus,
-      comment,
-      responsible: "Инженер по ОТ"
-    };
-  } else {
-    decisionLog.unshift({
-      docId,
-      title,
-      datetime,
-      status: normalizedStatus,
-      comment,
-      responsible: "Инженер по ОТ"
-    });
-  }
-  saveDecisionLog();
-  renderDecisionLog();
-}
-
-function initializeSavedStatuses() {
-  documents.forEach(doc => {
-    const saved = loadDecision(doc.id);
-    if (saved && saved.status) {
-      doc.status = normalizeDocumentStatus(saved.status);
-    }
-  });
-}
 
 function renderStats() {
   const newCount = documents.filter(doc => normalizeDocumentStatus(doc.status) === "Новое").length;
@@ -1175,11 +1164,11 @@ function selectDocument(doc, cardElement) {
 }
 
 function renderSelectedDocument(doc) {
-  const savedDecision = loadDecision(doc.id) || { status: doc.status, comment: "" };
-  if (savedDecision.status) {
-    savedDecision.status = normalizeDocumentStatus(savedDecision.status);
-    doc.status = savedDecision.status;
-  }
+  const savedDecision = {
+    status: normalizeDocumentStatus(doc.status),
+    comment: doc.engineerComment || ""
+  };
+  doc.status = savedDecision.status;
   selectedDocument.innerHTML = `
     <h3>${doc.title}</h3>
     <div class="detail-row">
@@ -1248,12 +1237,14 @@ function renderSelectedDocument(doc) {
   `;
 
   const saveButton = document.getElementById("save-decision");
-  saveButton.addEventListener("click", () => {
+  saveButton.addEventListener("click", async () => {
     const status = normalizeDocumentStatus(document.getElementById("engineer-status").value);
     const comment = document.getElementById("engineer-comment").value.trim();
-    saveDecision(doc.id, { status, comment });
-    updateDecisionLogEntry(doc.id, doc.title, status, comment);
+    await saveDecisionToApi(doc.id, status, comment);
+    decisionLog = await loadDecisionLogFromApi();
+    renderDecisionLog();
     doc.status = status;
+    doc.engineerComment = comment;
     if (activeStatusFilter && activeStatusFilter !== status) {
       if (shouldHideFromMainWorkingList(activeStatusFilter) && !shouldHideFromMainWorkingList(status)) {
         activeStatusFilter = status;
