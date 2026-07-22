@@ -57,7 +57,7 @@ class DecisionStorageTestCase(unittest.TestCase):
     def test_each_change_is_saved_in_history(self) -> None:
         save_decision(
             self.document_id,
-            status="Проверка актуальности / На проверке",
+            status="Проверка актуальности",
             comment="Начата проверка",
         )
 
@@ -73,7 +73,7 @@ class DecisionStorageTestCase(unittest.TestCase):
         self.assertEqual(history[0]["status"], "Закрыто")
         self.assertEqual(
             history[1]["status"],
-            "Проверка актуальности / На проверке",
+            "Проверка актуальности",
         )
 
     def test_recent_decisions_include_document_title(self) -> None:
