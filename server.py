@@ -22,6 +22,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import tempfile
 
+from api_routes import SQLiteApiMixin
+from storage.database import initialize_database
+
 
 HOST = "127.0.0.1"
 PORT = 8000
@@ -255,10 +258,14 @@ def refresh_client_review_reports() -> dict[str, bool]:
     }
 
 
-class OTMonitorRequestHandler(SimpleHTTPRequestHandler):
+class OTMonitorRequestHandler(SQLiteApiMixin, SimpleHTTPRequestHandler):
     """HTTP handler для статических файлов и минимального API."""
 
     def do_GET(self) -> None:
+        request_path = self.path.split("?", 1)[0]
+        if self.handle_sqlite_get(request_path):
+            return
+
         if self.path == "/api/review-comments/report-rtf":
             self.handle_review_comments_report_rtf()
             return
@@ -288,6 +295,10 @@ class OTMonitorRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:
+        request_path = self.path.split("?", 1)[0]
+        if self.handle_sqlite_post(request_path):
+            return
+
         if self.path == "/api/run-demo-check":
             self.handle_run_demo_check()
             return
@@ -539,6 +550,7 @@ class OTMonitorRequestHandler(SimpleHTTPRequestHandler):
 
 def main() -> None:
     """Точка входа сервера."""
+    initialize_database()
     handler_class = partial(OTMonitorRequestHandler, directory=str(BASE_DIR))
     server = ThreadingHTTPServer((HOST, PORT), handler_class)
 
@@ -546,6 +558,10 @@ def main() -> None:
     print(f"Serving files from: {BASE_DIR}")
     print("Available endpoints:")
     print("  GET  /api/health")
+    print("  GET  /api/documents")
+    print("  GET  /api/checks")
+    print("  GET  /api/decisions")
+    print("  POST /api/documents/<id>/decision")
     print("  GET  /api/review-comments")
     print("  GET  /api/review-comments/report")
     print("  GET  /api/review-comments/report-rtf")
