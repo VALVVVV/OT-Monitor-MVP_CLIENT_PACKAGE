@@ -422,39 +422,40 @@ function formatCheckLogDatetime(isoDatetime) {
   return `${dateStr}.${monthStr}.${yearStr} ${hoursStr}:${minsStr}:${secsStr}`;
 }
 
-function mapJsonCheckLogToUiEntry(item) {
-  const resultValue = String(item.result || item.status || "").toLowerCase();
-  const hasErrorText = item.error && item.error !== "-";
-  const isSuccess = resultValue === "success" || resultValue === "ok";
+function mapApiCheckToUiEntry(item) {
+  const resultLabels = {
+    running: "Выполняется",
+    success: "Успешно",
+    partial: "Частично",
+    error: "Ошибка"
+  };
 
   return {
-    datetime: formatCheckLogDatetime(item.checked_at),
-    source: item.source || item.source_id || "Неизвестный источник",
-    result: isSuccess && !hasErrorText ? "Успешно" : "Ошибка",
+    datetime: formatCheckLogDatetime(item.finished_at || item.started_at),
+    source: sourceNames[item.source_id] || item.source_id || "Неизвестный источник",
+    result: resultLabels[item.result] || "Ошибка",
     found: Number.isFinite(Number(item.found_count)) ? Number(item.found_count) : 0,
     newDocs: Number.isFinite(Number(item.added_count)) ? Number(item.added_count) : 0,
-    error: item.error && item.error.trim() ? item.error : "-"
+    error: item.error_message && item.error_message.trim()
+      ? item.error_message
+      : "-"
   };
 }
 
-async function loadCheckLogFromJson() {
-  const response = await fetch("data/check_log.json", { cache: "no-store" });
+async function loadCheckLogFromApi() {
+  const response = await fetch("/api/checks", { cache: "no-store" });
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
 
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error("Некорректный формат check_log.json");
+  const payload = await response.json();
+
+  if (!payload.ok || !Array.isArray(payload.checks)) {
+    throw new Error("Некорректный ответ /api/checks");
   }
 
-  if (data.length === 0) {
-    return [];
-  }
-
-  return data
-    .map(mapJsonCheckLogToUiEntry)
-    .reverse();
+  return payload.checks.map(mapApiCheckToUiEntry);
 }
 
 function normalizeDocumentStatus(status) {
@@ -608,11 +609,10 @@ async function reloadRuntimeData() {
   }
 
   try {
-    const loadedCheckLog = await loadCheckLogFromJson();
-    checkLog = loadedCheckLog.length > 0 ? loadedCheckLog : [...fallbackCheckLog];
+    checkLog = await loadCheckLogFromApi();
   } catch (error) {
-    checkLog = [...fallbackCheckLog];
-    console.warn("Не удалось загрузить data/check_log.json, используются демо-записи журнала.", error);
+    checkLog = [];
+    console.warn("Не удалось загрузить журнал проверок из SQLite API.", error);
   }
 
   initializeSavedStatuses();
