@@ -359,39 +359,48 @@ function loadDecisionLog() {
 
 const decisionLog = loadDecisionLog();
 
-// Преобразуем документ из JSON-формата в формат, который уже использует интерфейс.
-function mapJsonDocumentToUiDocument(item) {
+const sourceNames = {
+  mintrud: "Минтруд России",
+  mchs: "МЧС России",
+  minzdrav: "Минздрав России"
+};
+
+function mapApiDocumentToUiDocument(item) {
+  const discoveredDate = String(item.discovered_at || "").slice(0, 10);
+
   return {
     id: item.id,
     title: item.title || "Без названия",
-    source: item.source || "Не указан",
+    source: sourceNames[item.source_id] || item.source_id || "Не указан",
     section: item.section || item.topic || "Общее",
     summary: item.summary || "Краткое описание отсутствует.",
     status: item.status || "Новое",
-    foundDate: item.found_date || "",
+    foundDate: item.publication_date || discoveredDate,
     originalUrl: item.original_url || "",
+    fileUrl: item.file_url || "",
     savedFilePath: item.saved_file_path || "-",
-    internalTypes: Array.isArray(item.linked_doc_types) ? item.linked_doc_types : [],
-    aiNote: item.aiNote,
-    draftRecommendation: item.draftRecommendation,
-    draftWarning: item.draftWarning
+    engineerComment: item.engineer_comment || "",
+    internalTypes: [],
+    aiNote: "",
+    draftRecommendation: "",
+    draftWarning: ""
   };
 }
 
-// Пытаемся загрузить реальные документы из JSON. Если что-то пойдёт не так,
-// интерфейс продолжит работу на встроенных демо-данных.
-async function loadDocumentsFromJson() {
-  const response = await fetch("data/documents.json", { cache: "no-store" });
+async function loadDocumentsFromApi() {
+  const response = await fetch("/api/documents", { cache: "no-store" });
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
 
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error("Некорректный формат documents.json");
+  const payload = await response.json();
+
+  if (!payload.ok || !Array.isArray(payload.documents)) {
+    throw new Error("Некорректный ответ /api/documents");
   }
 
-  return data.map(mapJsonDocumentToUiDocument);
+  return payload.documents.map(mapApiDocumentToUiDocument);
 }
 
 function formatCheckLogDatetime(isoDatetime) {
@@ -591,11 +600,11 @@ function hideCheckMessageLater() {
 
 async function reloadRuntimeData() {
   try {
-    const loadedDocuments = await loadDocumentsFromJson();
+    const loadedDocuments = await loadDocumentsFromApi();
     documents = loadedDocuments;
   } catch (error) {
     documents = [...fallbackDocuments];
-    console.warn("Не удалось загрузить data/documents.json, используются демо-документы.", error);
+    console.warn("Не удалось загрузить документы из SQLite API, используются демо-документы.", error);
   }
 
   try {
@@ -1652,7 +1661,7 @@ function setupActions() {
   }
 }
 
-// Инициализируем интерфейс. Сначала пробуем взять реальные документы из JSON,
+// Инициализируем интерфейс. Сначала пробуем взять документы из SQLite API,
 // а при любой ошибке остаёмся на встроенном демонстрационном наборе.
 async function initializeApp() {
   await reloadRuntimeData();
