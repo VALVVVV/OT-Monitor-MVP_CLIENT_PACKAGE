@@ -8,11 +8,13 @@ from functools import partial
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError
+from unittest.mock import patch
 from urllib.request import Request, urlopen
 
 from server import OTMonitorRequestHandler
 from storage import database
 from storage.documents import get_document, save_document
+from storage.downloads import DownloadResult
 
 
 class SQLiteApiTestCase(unittest.TestCase):
@@ -137,6 +139,106 @@ class SQLiteApiTestCase(unittest.TestCase):
         self.assertEqual(
             decisions_payload["count"],
             1,
+        )
+
+    def test_download_endpoint_returns_result(
+        self,
+    ) -> None:
+        fake_result = DownloadResult(
+            document_id=self.document_id,
+            status="downloaded",
+            saved_file_path=(
+                "data/downloaded_documents/test.pdf"
+            ),
+            message="Файл успешно скачан",
+            downloaded=True,
+        )
+
+        with patch(
+            "api_routes.download_document_file",
+            return_value=fake_result,
+        ):
+            status, payload = self.post_json(
+                (
+                    f"/api/documents/"
+                    f"{self.document_id}/download"
+                ),
+                {},
+            )
+
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(
+            payload["download"]["status"],
+            "downloaded",
+        )
+        self.assertEqual(
+            payload["download"]["saved_file_path"],
+            "data/downloaded_documents/test.pdf",
+        )
+
+    def test_download_failure_returns_422(
+        self,
+    ) -> None:
+        fake_result = DownloadResult(
+            document_id=self.document_id,
+            status="failed",
+            saved_file_path="",
+            message="HTTP 500",
+            downloaded=False,
+        )
+
+        with patch(
+            "api_routes.download_document_file",
+            return_value=fake_result,
+        ):
+            request = Request(
+                (
+                    f"{self.base_url}/api/documents/"
+                    f"{self.document_id}/download"
+                ),
+                data=b"{}",
+                headers={
+                    "Content-Type": "application/json"
+                },
+                method="POST",
+            )
+
+            with self.assertRaises(HTTPError) as context:
+                urlopen(request)
+
+        self.assertEqual(
+            context.exception.code,
+            422,
+        )
+
+    def test_download_unknown_document_returns_404(
+        self,
+    ) -> None:
+        with patch(
+            "api_routes.download_document_file",
+            side_effect=ValueError(
+                "Документ с ID 999 не найден"
+            ),
+        ):
+            request = Request(
+                (
+                    f"{self.base_url}/api/documents/"
+                    "999/download"
+                ),
+                data=b"{}",
+                headers={
+                    "Content-Type": "application/json"
+                },
+                method="POST",
+            )
+
+            with self.assertRaises(HTTPError) as context:
+                urlopen(request)
+
+        self.assertEqual(
+            context.exception.code,
+            404,
         )
 
     def test_invalid_decision_returns_bad_request(

@@ -9,10 +9,15 @@ from http import HTTPStatus
 from storage.checks import list_checks
 from storage.decisions import list_recent_decisions, save_decision
 from storage.documents import get_document, list_documents
+from storage.downloads import download_document_file
 
 
 DECISION_PATH_PATTERN = re.compile(
     r"^/api/documents/(\d+)/decision$"
+)
+
+DOWNLOAD_PATH_PATTERN = re.compile(
+    r"^/api/documents/(\d+)/download$"
 )
 
 
@@ -61,6 +66,46 @@ class SQLiteApiMixin:
 
     def handle_sqlite_post(self, request_path: str) -> bool:
         """Обрабатывает POST-маршруты SQLite."""
+        download_match = DOWNLOAD_PATH_PATTERN.fullmatch(request_path)
+
+        if download_match is not None:
+            document_id = int(download_match.group(1))
+
+            try:
+                result = download_document_file(document_id)
+            except ValueError as error:
+                self.send_json(
+                    HTTPStatus.NOT_FOUND,
+                    {
+                        "ok": False,
+                        "message": str(error),
+                    },
+                )
+                return True
+
+            is_success = result.status == "downloaded"
+            response_status = (
+                HTTPStatus.OK
+                if is_success
+                else HTTPStatus.UNPROCESSABLE_ENTITY
+            )
+
+            self.send_json(
+                response_status,
+                {
+                    "ok": is_success,
+                    "message": result.message,
+                    "download": {
+                        "document_id": result.document_id,
+                        "status": result.status,
+                        "saved_file_path": result.saved_file_path,
+                        "downloaded": result.downloaded,
+                    },
+                    "document": get_document(document_id),
+                },
+            )
+            return True
+
         match = DECISION_PATH_PATTERN.fullmatch(request_path)
         if match is None:
             return False

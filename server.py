@@ -562,6 +562,7 @@ def main() -> None:
     print("  GET  /api/checks")
     print("  GET  /api/decisions")
     print("  POST /api/documents/<id>/decision")
+    print("  POST /api/documents/<id>/download")
     print("  GET  /api/review-comments")
     print("  GET  /api/review-comments/report")
     print("  GET  /api/review-comments/report-rtf")
