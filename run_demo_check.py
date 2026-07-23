@@ -55,19 +55,19 @@ SOURCE_CHAINS = [
         source_id="mintrud",
         source_name="Минтруд России",
         inspect_script="inspect_mintrud_docs.py",
-        result_file="data/mintrud_documents_filtered.json",
+        result_file="runtime/parser_artifacts/mintrud_documents_filtered.json",
     ),
     SourceChain(
         source_id="mchs",
         source_name="МЧС России",
         inspect_script="inspect_mchs_docs.py",
-        result_file="data/mchs_documents_filtered.json",
+        result_file="runtime/parser_artifacts/mchs_documents_filtered.json",
     ),
     SourceChain(
         source_id="minzdrav",
         source_name="Минздрав России",
         inspect_script="inspect_minzdrav_docs.py",
-        result_file="data/minzdrav_documents_filtered.json",
+        result_file="runtime/parser_artifacts/minzdrav_documents_filtered.json",
     ),
 ]
 

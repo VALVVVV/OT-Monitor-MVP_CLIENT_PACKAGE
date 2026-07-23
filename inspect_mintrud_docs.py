@@ -22,10 +22,10 @@ from urllib.parse import urljoin, urlparse
 TARGET_URL = "https://mintrud.gov.ru/docs"
 SOURCE_NAME = "Минтруд России"
 TIMEOUT_SECONDS = 20
-HTML_OUTPUT_PATH = Path("files/saved_documents/mintrud_docs_page.html")
-JSON_OUTPUT_PATH = Path("data/mintrud_links_inspection.json")
-FILTERED_JSON_OUTPUT_PATH = Path("data/mintrud_documents_filtered.json")
-REJECTED_JSON_OUTPUT_PATH = Path("data/mintrud_links_rejected.json")
+HTML_OUTPUT_PATH = Path("runtime/parser_artifacts/mintrud_docs_page.html")
+JSON_OUTPUT_PATH = Path("runtime/parser_artifacts/mintrud_links_inspection.json")
+FILTERED_JSON_OUTPUT_PATH = Path("runtime/parser_artifacts/mintrud_documents_filtered.json")
+REJECTED_JSON_OUTPUT_PATH = Path("runtime/parser_artifacts/mintrud_links_rejected.json")
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
