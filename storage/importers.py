@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
@@ -53,6 +54,41 @@ class ImportResult:
     error_message: str
 
 
+def normalize_identity_text(value: object) -> str:
+    """Нормализует текст для сравнения документов."""
+    return " ".join(str(value or "").lower().split())
+
+
+def build_document_unique_key(
+    source_id: str,
+    item: Mapping[str, object],
+    original_url: str,
+) -> str:
+    """Формирует ключ для защиты от логических дублей."""
+    title = normalize_identity_text(item.get("title"))
+
+    if source_id == "mintrud":
+        number_match = re.search(
+            r"№\s*([0-9а-яa-z/-]+)",
+            title,
+            flags=re.IGNORECASE,
+        )
+        document_date = normalize_identity_text(
+            item.get("possible_date")
+            or item.get("document_date")
+            or item.get("publication_date")
+        )
+
+        if number_match and document_date:
+            document_number = number_match.group(1)
+            return (
+                f"{source_id}:number:{document_number}:"
+                f"date:{document_date}"
+            )
+
+    return f"{source_id}:url:{original_url}"
+
+
 def build_document(
     source_id: str,
     item: Mapping[str, object],
@@ -75,6 +111,11 @@ def build_document(
         raise ValueError("У документа отсутствует URL")
 
     settings = SOURCE_SETTINGS[source_id]
+    unique_key = build_document_unique_key(
+        source_id,
+        item,
+        original_url,
+    )
 
     return {
         "source_id": source_id,
@@ -93,6 +134,7 @@ def build_document(
         "topic": settings["topic"],
         "status": "Новое",
         "engineer_comment": "",
+        "unique_key": unique_key,
         "raw_payload": dict(item),
     }
 

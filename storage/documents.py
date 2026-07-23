@@ -64,10 +64,10 @@ def save_document(document: Mapping[str, object]) -> SaveDocumentResult:
             """
             SELECT id
             FROM documents
-            WHERE source_id = ?
-              AND original_url = ?
+            WHERE (source_id = ? AND original_url = ?)
+               OR unique_key = ?
             """,
-            (source_id, original_url),
+            (source_id, original_url, unique_key),
         ).fetchone()
 
         if existing is not None:

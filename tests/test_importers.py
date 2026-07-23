@@ -80,6 +80,41 @@ class ParserImportTestCase(unittest.TestCase):
         self.assertEqual(second.skipped_duplicates, 1)
         self.assertEqual(len(list_documents()), 1)
 
+    def test_same_document_with_different_urls_is_deduplicated(self) -> None:
+        title = (
+            "Приказ Минтруда России № 236 от 1 июня 2026 г. "
+            "О внесении изменений"
+        )
+
+        first = import_source_payload(
+            "mintrud",
+            [
+                {
+                    "title": title,
+                    "url": "https://mintrud.gov.ru/docs/mintrud/orders/3216",
+                    "possible_date": "1 июня 2026",
+                }
+            ],
+        )
+
+        second = import_source_payload(
+            "mintrud",
+            [
+                {
+                    "title": title,
+                    "url": "https://mintrud.gov.ru/docs/mintrud/orders/3217",
+                    "possible_date": "1 июня 2026",
+                }
+            ],
+        )
+
+        documents = list_documents()
+
+        self.assertEqual(first.added_count, 1)
+        self.assertEqual(second.added_count, 0)
+        self.assertEqual(second.skipped_duplicates, 1)
+        self.assertEqual(len(documents), 1)
+
     def test_parser_error_is_written_to_check_log(self) -> None:
         result = import_source_payload(
             "mintrud",
