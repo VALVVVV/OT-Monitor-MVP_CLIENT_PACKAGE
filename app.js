@@ -400,13 +400,28 @@ function mapApiDocumentToUiDocument(item) {
     foundDate: item.publication_date || discoveredDate,
     originalUrl: item.original_url || "",
     fileUrl: item.file_url || "",
-    savedFilePath: item.saved_file_path || "-",
+    savedFilePath: item.saved_file_path || "",
+    downloadStatus: item.download_status || "not_requested",
     engineerComment: item.engineer_comment || "",
     internalTypes: [],
     aiNote: "",
     draftRecommendation: "",
     draftWarning: ""
   };
+}
+
+async function downloadDocumentFileFromApi(documentId) {
+  const response = await fetch(`/api/documents/${documentId}/download`, {
+    method: "POST"
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.message || `HTTP ${response.status}`);
+  }
+
+  return payload;
 }
 
 async function loadDocumentsFromApi() {
@@ -1187,8 +1202,22 @@ function renderSelectedDocument(doc) {
       <p><a href="${doc.originalUrl || '#'}" target="_blank" rel="noopener noreferrer">${doc.originalUrl || "—"}</a></p>
     </div>
     <div class="detail-row">
-      <span>Сохранённый файл</span>
-      <strong>${doc.savedFilePath || "—"}</strong>
+      <span>Файл документа</span>
+      <div>
+        ${
+          doc.savedFilePath
+            ? `<p><a href="/${doc.savedFilePath}" target="_blank" rel="noopener noreferrer">Открыть сохранённый файл</a></p>`
+            : `<p>${doc.fileUrl ? "Файл ещё не скачан" : "Ссылка на файл отсутствует"}</p>`
+        }
+        <button
+          id="download-document-file"
+          type="button"
+          ${doc.fileUrl ? "" : "disabled"}
+        >
+          ${doc.savedFilePath ? "Скачать повторно" : "Скачать файл"}
+        </button>
+        <p id="download-message" class="save-message"></p>
+      </div>
     </div>
     <div class="detail-row">
       <span>Раздел</span>
@@ -1235,6 +1264,31 @@ function renderSelectedDocument(doc) {
       <p id="decision-message" class="save-message"></p>
     </div>
   `;
+
+  const downloadButton = document.getElementById("download-document-file");
+
+  if (downloadButton) {
+    downloadButton.addEventListener("click", async () => {
+      const messageElement = document.getElementById("download-message");
+
+      downloadButton.disabled = true;
+      messageElement.textContent = "Скачивание файла...";
+
+      try {
+        const payload = await downloadDocumentFileFromApi(doc.id);
+        const updatedDocument = payload.document;
+
+        doc.savedFilePath = updatedDocument.saved_file_path || "";
+        doc.downloadStatus = updatedDocument.download_status || "not_requested";
+
+        messageElement.textContent = payload.message || "Файл скачан";
+        renderSelectedDocument(doc);
+      } catch (error) {
+        messageElement.textContent = `Ошибка: ${error.message}`;
+        downloadButton.disabled = false;
+      }
+    });
+  }
 
   const saveButton = document.getElementById("save-decision");
   saveButton.addEventListener("click", async () => {
