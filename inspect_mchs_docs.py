@@ -13,11 +13,11 @@ from urllib.parse import urljoin, urlparse
 
 TARGET_URL = "https://mchs.gov.ru/dokumenty/vse-dokumenty"
 SOURCE_NAME = "МЧС России"
-HTML_OUTPUT_PATH = Path("files/saved_documents/mchs_docs_page.html")
-ALL_LINKS_OUTPUT_PATH = Path("data/mchs_links_inspection.json")
-FILTERED_OUTPUT_PATH = Path("data/mchs_documents_filtered.json")
-FILES_OUTPUT_PATH = Path("data/mchs_document_files.json")
-REJECTED_OUTPUT_PATH = Path("data/mchs_links_rejected.json")
+HTML_OUTPUT_PATH = Path("runtime/parser_artifacts/mchs_docs_page.html")
+ALL_LINKS_OUTPUT_PATH = Path("runtime/parser_artifacts/mchs_links_inspection.json")
+FILTERED_OUTPUT_PATH = Path("runtime/parser_artifacts/mchs_documents_filtered.json")
+FILES_OUTPUT_PATH = Path("runtime/parser_artifacts/mchs_document_files.json")
+REJECTED_OUTPUT_PATH = Path("runtime/parser_artifacts/mchs_links_rejected.json")
 TIMEOUT_SECONDS = 20
 MIN_DOCUMENT_DATE = date(2026, 6, 1)
 USER_AGENT = (

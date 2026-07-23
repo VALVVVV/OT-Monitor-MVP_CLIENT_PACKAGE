@@ -13,10 +13,10 @@ from urllib.parse import urljoin, urlparse
 
 TARGET_URL = "https://minzdrav.gov.ru/documents"
 SOURCE_NAME = "Минздрав России"
-HTML_OUTPUT_PATH = Path("files/saved_documents/minzdrav_docs_page.html")
-ALL_LINKS_OUTPUT_PATH = Path("data/minzdrav_links_inspection.json")
-FILTERED_OUTPUT_PATH = Path("data/minzdrav_documents_filtered.json")
-REJECTED_OUTPUT_PATH = Path("data/minzdrav_links_rejected.json")
+HTML_OUTPUT_PATH = Path("runtime/parser_artifacts/minzdrav_docs_page.html")
+ALL_LINKS_OUTPUT_PATH = Path("runtime/parser_artifacts/minzdrav_links_inspection.json")
+FILTERED_OUTPUT_PATH = Path("runtime/parser_artifacts/minzdrav_documents_filtered.json")
+REJECTED_OUTPUT_PATH = Path("runtime/parser_artifacts/minzdrav_links_rejected.json")
 TIMEOUT_SECONDS = 20
 MINZDRAV_MIN_DATE = date(2026, 5, 1)
 USER_AGENT = (
