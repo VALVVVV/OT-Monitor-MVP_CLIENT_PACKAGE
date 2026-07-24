@@ -24,6 +24,8 @@ import tempfile
 
 from api_routes import SQLiteApiMixin
 from storage.database import initialize_database
+from storage.checks import list_checks
+from storage.documents import list_documents
 
 
 HOST = "127.0.0.1"
@@ -343,8 +345,11 @@ class OTMonitorRequestHandler(SQLiteApiMixin, SimpleHTTPRequestHandler):
             is_check_running = True
 
         try:
-            documents_count_before = load_json_list_count_safe(BASE_DIR / "data" / "documents.json")
-            check_log_count_before = load_json_list_count_safe(BASE_DIR / "data" / "check_log.json")
+            documents_count_before = len(list_documents())
+            existing_check_ids = {
+                int(check["id"])
+                for check in list_checks()
+            }
 
             child_env = os.environ.copy()
             child_env["PYTHONIOENCODING"] = "utf-8"
@@ -361,21 +366,50 @@ class OTMonitorRequestHandler(SQLiteApiMixin, SimpleHTTPRequestHandler):
                 check=False,
             )
 
-            documents_count_after = load_json_list_count_safe(BASE_DIR / "data" / "documents.json")
-            check_log_count_after = load_json_list_count_safe(BASE_DIR / "data" / "check_log.json")
-            ok = completed.returncode == 0
-            message = "Проверка завершена успешно." if ok else "Проверка завершена с ошибкой. Подробности см. в stdout/stderr."
+            documents_count_after = len(list_documents())
+
+            source_results = [
+                check
+                for check in list_checks()
+                if int(check["id"]) not in existing_check_ids
+            ]
+            source_results.reverse()
+
+            successful_sources = [
+                result
+                for result in source_results
+                if result["result"] == "success"
+            ]
+            failed_sources = [
+                result
+                for result in source_results
+                if result["result"] in {"partial", "error"}
+            ]
+
+            if source_results and not failed_sources:
+                overall_result = "success"
+                message = "Все источники проверены успешно."
+            elif successful_sources:
+                overall_result = "partial"
+                message = "Проверка завершена частично."
+            else:
+                overall_result = "error"
+                message = "Не удалось успешно проверить источники."
 
             self.send_json(
                 HTTPStatus.OK,
                 {
-                    "ok": ok,
+                    "ok": overall_result == "success",
+                    "overall_result": overall_result,
                     "message": message,
                     "returncode": completed.returncode,
                     "documents_count_before": documents_count_before,
                     "documents_count_after": documents_count_after,
-                    "check_log_count_before": check_log_count_before,
-                    "check_log_count_after": check_log_count_after,
+                    "added_count": (
+                        documents_count_after
+                        - documents_count_before
+                    ),
+                    "source_results": source_results,
                     "stdout": completed.stdout,
                     "stderr": completed.stderr,
                 },

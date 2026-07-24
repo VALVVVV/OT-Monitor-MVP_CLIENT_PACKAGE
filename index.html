@@ -34,11 +34,19 @@
       <p id="review-comments-counter" class="review-comments-counter">Сохранено замечаний: 0</p>
       <button id="add-general-review-comment" class="secondary-action-button review-tip-button" type="button">Добавить общее замечание по странице</button>
     </div>
+    <section
+      id="check-notification"
+      class="check-notification"
+      aria-live="polite"
+      aria-label="Результат последней проверки"
+    ></section>
+
     <section class="stats-panel" data-review-zone="top_statuses" data-review-title="Верхние статусы">
       <div class="stat-card">
         <span class="stat-label">Последняя проверка</span>
         <strong id="last-check">28 мая 2026</strong>
       </div>
+
       <button id="filter-status-new" class="stat-card stat-filter-card" type="button">
         <span class="stat-label">Новые документы</span>
         <strong id="new-docs">0</strong>
@@ -134,7 +142,6 @@
               <strong>не настроена</strong>
             </div>
           </div>
-          <div id="check-notification" class="check-notification"></div>
           <button id="toggle-schedule-settings" class="schedule-toggle-button" type="button">Настроить периодичность ▼</button>
           <div id="schedule-settings-panel" class="schedule-settings-panel" hidden>
             <p class="sources-note info-note">В MVP настройка периодичности показана как подготовка к автоматической проверке. Реальный автоматический запуск будет подключён на следующем этапе.</p>

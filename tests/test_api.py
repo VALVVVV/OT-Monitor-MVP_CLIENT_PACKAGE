@@ -9,12 +9,14 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError
 from unittest.mock import patch
+from types import SimpleNamespace
 from urllib.request import Request, urlopen
 
 from server import OTMonitorRequestHandler
 from storage import database
 from storage.documents import get_document, save_document
 from storage.downloads import DownloadResult
+from storage.checks import finish_check, start_check
 
 
 class SQLiteApiTestCase(unittest.TestCase):
@@ -264,6 +266,118 @@ class SQLiteApiTestCase(unittest.TestCase):
         self.assertEqual(
             context.exception.code,
             400,
+        )
+
+    def test_run_check_returns_source_results(
+        self,
+    ) -> None:
+        def fake_run(*args, **kwargs):
+            del args, kwargs
+
+            for source_id in (
+                "mintrud",
+                "mchs",
+                "minzdrav",
+            ):
+                check_id = start_check(source_id)
+                finish_check(
+                    check_id,
+                    result="success",
+                    found_count=2,
+                    added_count=1,
+                )
+
+            return SimpleNamespace(
+                returncode=0,
+                stdout="Проверка завершена",
+                stderr="",
+            )
+
+        with patch(
+            "server.subprocess.run",
+            side_effect=fake_run,
+        ):
+            status, payload = self.post_json(
+                "/api/run-demo-check",
+                {},
+            )
+
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(
+            payload["overall_result"],
+            "success",
+        )
+        self.assertEqual(
+            len(payload["source_results"]),
+            3,
+        )
+        self.assertEqual(
+            payload["message"],
+            "Все источники проверены успешно.",
+        )
+
+    def test_run_check_can_return_partial_result(
+        self,
+    ) -> None:
+        def fake_run(*args, **kwargs):
+            del args, kwargs
+
+            successful_check = start_check("mchs")
+            finish_check(
+                successful_check,
+                result="success",
+                found_count=2,
+                added_count=1,
+            )
+
+            failed_check = start_check("mintrud")
+            finish_check(
+                failed_check,
+                result="error",
+                error_message="ReadTimeout",
+            )
+
+            return SimpleNamespace(
+                returncode=1,
+                stdout="",
+                stderr="ReadTimeout",
+            )
+
+        with patch(
+            "server.subprocess.run",
+            side_effect=fake_run,
+        ):
+            status, payload = self.post_json(
+                "/api/run-demo-check",
+                {},
+            )
+
+        self.assertEqual(status, 200)
+        self.assertFalse(payload["ok"])
+        self.assertEqual(
+            payload["overall_result"],
+            "partial",
+        )
+        self.assertEqual(
+            payload["message"],
+            "Проверка завершена частично.",
+        )
+
+        errors = [
+            item
+            for item in payload["source_results"]
+            if item["result"] == "error"
+        ]
+
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(
+            errors[0]["source_id"],
+            "mintrud",
+        )
+        self.assertEqual(
+            errors[0]["error_message"],
+            "ReadTimeout",
         )
 
     def test_checks_endpoint_returns_empty_list(
