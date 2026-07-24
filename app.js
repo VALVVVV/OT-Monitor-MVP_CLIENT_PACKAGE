@@ -255,7 +255,8 @@ function mapApiDocumentToUiDocument(item) {
     section: item.section || item.topic || "Общее",
     summary: item.summary || "Краткое описание отсутствует.",
     status: item.status || "Новое",
-    foundDate: item.publication_date || discoveredDate,
+    publicationDate: item.publication_date || "",
+    discoveredDate,
     originalUrl: item.original_url || "",
     fileUrl: item.file_url || "",
     savedFilePath: item.saved_file_path || "",
@@ -674,6 +675,8 @@ function parseDocumentDisplayDate(value) {
 
 function getDocumentDisplayTimestamp(doc) {
   const dateFields = [
+    doc.publicationDate,
+    doc.discoveredDate,
     doc.found_date,
     doc.foundDate,
     doc.discovered_at,
@@ -1109,8 +1112,12 @@ function renderSelectedDocument(doc) {
       </strong>
     </div>
     <div class="detail-row">
+      <span>Дата публикации</span>
+      <strong>${doc.publicationDate || "—"}</strong>
+    </div>
+    <div class="detail-row">
       <span>Дата обнаружения</span>
-      <strong>${doc.foundDate || "—"}</strong>
+      <strong>${doc.discoveredDate || "—"}</strong>
     </div>
     <div class="detail-row">
       <span>Ссылка на первоисточник</span>
