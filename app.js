@@ -622,15 +622,68 @@ function getLatestCheckDatetimeForSource(sourceName) {
 }
 
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatSourceCheckMessage(payload) {
+  if (!payload || !Array.isArray(payload.source_results)) {
+    return payload && payload.message
+      ? escapeHtml(payload.message)
+      : "Проверка завершена.";
+  }
+
+  const resultLabels = {
+    success: "успешно",
+    partial: "частично",
+    error: "ошибка",
+    running: "выполняется"
+  };
+
+  const sourceLines = payload.source_results.map(result => {
+    const sourceName = sourceNames[result.source_id]
+      || result.source
+      || result.source_id
+      || "Неизвестный источник";
+
+    const resultLabel = resultLabels[result.result] || result.result;
+    const foundCount = Number(result.found_count) || 0;
+    const addedCount = Number(result.added_count) || 0;
+
+    let line = `${escapeHtml(sourceName)}: ${escapeHtml(resultLabel)}`
+      + `; найдено ${foundCount}; новых ${addedCount}`;
+
+    if (result.error_message) {
+      line += `; ошибка: ${escapeHtml(result.error_message)}`;
+    }
+
+    return line;
+  });
+
+  const heading = payload.message
+    ? escapeHtml(payload.message)
+    : "Проверка завершена.";
+
+  return `${heading}<br>${sourceLines.join("<br>")}`;
+}
+
 function showCheckMessage(message) {
-  checkNotification.innerHTML = `<p class="notification-text">${message}</p>`;
+  checkNotification.innerHTML = `
+    <div class="check-result-header">
+      <h2>Результат последней проверки</h2>
+    </div>
+    <div class="notification-text">${message}</div>
+  `;
   checkNotification.classList.add("visible");
 }
 
 function hideCheckMessageLater() {
-  setTimeout(() => {
-    checkNotification.classList.remove("visible");
-  }, 4000);
+  // Итог последней проверки остаётся видимым до следующего запуска.
 }
 
 async function reloadRuntimeData() {
@@ -1564,11 +1617,7 @@ async function showCheckNotification() {
 
     await reloadRuntimeData();
 
-    if (payload && payload.ok) {
-      showCheckMessage("Проверка завершена.");
-    } else {
-      showCheckMessage("Проверка завершена с ошибками. Подробности см. в журнале/консоли.");
-    }
+    showCheckMessage(formatSourceCheckMessage(payload));
   } catch (error) {
     console.warn("Ошибка при запуске /api/run-demo-check", error);
     showCheckMessage("Не удалось выполнить проверку. Подробности см. в консоли.");

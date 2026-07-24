@@ -719,20 +719,28 @@ main {
   opacity: 1;
 }
 .check-notification {
-  margin-bottom: 16px;
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  display: none;
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  background: var(--color-surface-soft);
+  border: 1px solid #cfe1ca;
+  border-radius: 14px;
+  color: #235824;
+  box-shadow: 0 4px 14px rgba(35, 88, 36, 0.08);
 }
 .check-notification.visible {
-  opacity: 1;
+  display: block;
+}
+.check-result-header {
+  margin-bottom: 10px;
+}
+.check-result-header h2 {
+  margin: 0;
+  font-size: 18px;
 }
 .notification-text {
   margin: 0;
-  padding: 12px 16px;
-  background: var(--color-surface-soft);
-  border: 1px solid #cfe1ca;
-  border-radius: 10px;
-  color: #235824;
+  line-height: 1.65;
   font-size: 0.95rem;
 }
 .sources-table-wrapper {
