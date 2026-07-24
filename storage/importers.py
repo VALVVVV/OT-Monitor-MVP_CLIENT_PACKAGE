@@ -10,6 +10,7 @@ from typing import Mapping
 
 from storage.checks import finish_check, start_check
 from storage.documents import save_document
+from storage.publication_dates import extract_publication_date
 
 
 SOURCE_SETTINGS = {
@@ -122,10 +123,7 @@ def build_document(
         "external_id": item.get("id"),
         "title": title,
         "original_url": original_url,
-        "publication_date": (
-            item.get("document_date")
-            or item.get("publication_date")
-        ),
+        "publication_date": extract_publication_date(item),
         "summary": settings["summary"],
         "file_url": str(item.get("file_url") or ""),
         "saved_file_path": "",
