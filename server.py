@@ -236,17 +236,6 @@ def safe_write_text_file(target_path: Path, content: str, encoding: str) -> bool
                 pass
 
 
-
-def load_json_list_count_safe(file_path: Path) -> int | None:
-    """Возвращает длину JSON-списка или None, если файл не читается."""
-    try:
-        with file_path.open("r", encoding="utf-8-sig") as file:
-            payload = json.load(file)
-    except (OSError, json.JSONDecodeError, ValueError):
-        return None
-
-    return len(payload) if isinstance(payload, list) else None
-
 def refresh_client_review_reports() -> dict[str, bool]:
     """Обновляет клиентские копии TXT и RTF-отчётов из текущего JSON."""
     comments = load_review_comments()
